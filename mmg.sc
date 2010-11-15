@@ -7,19 +7,38 @@ A piece for recorder and live electronics
 
 Version log:
 12-11-2010: 0.1, historisch moment, de eerste tonen!!!
+15-11-2010: Een bufferrecorder en player ingevoegd! jeej, nu nog alleen het triggeren?
 
 */
 
 
 
-//SinDefs
+//SynDefs
 
+//sine voor additieve synth
 SynthDef(\SineEnv,{|freq=440, at=0.1, al=0.1, dt=0.1, sl=0.1, rt=1,az=0|
 	var chan=8;
 	Out.ar(0,	
 		PanAz.ar(chan, SinOsc.ar(freq,0, EnvGen.ar( Env.new([0,al,sl,0],[at,dt,rt]) , doneAction:2) ), az) ;
 	);	
 }).add;
+
+// Buffer Recorder
+SynthDef(\bufRecorder,{ |out=0, buf=0, fade=0.1, level=1, xfade=0, run=1, vol=1|
+	var in;
+	in = SoundIn.ar(1, EnvGen.kr(
+			Env.new([0,1,1,0], [fade, d-(fade*2), fade], 'linear'), doneAction: 2)
+	) * vol;
+	RecordBuf.ar(in, buf, 0, level, xfade, run);
+}).store;
+
+//Buffer afspelen:
+SynthDef(\bufPlayer, { | bufnum = 0|
+	var playbuf;
+	playbuf = PlayBuf.ar(1,bufnum);
+	FreeSelfWhenDone.kr(playbuf); // frees the synth when the PlayBuf is finished
+	Out.ar(0, playbuf);
+}).play(s, [\bufnum, b]);
 
 
 //Definier additieve geluiden:
