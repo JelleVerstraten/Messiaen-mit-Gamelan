@@ -30,9 +30,9 @@ SynthDef(\bufRecorder,{ |out=0, buf=0, fade=0.1, level=1, xfade=0, run=1, vol=1|
 			Env.new([0,1,1,0], [fade, d-(fade*2), fade], 'linear'), doneAction: 2)
 	) * vol;
 	RecordBuf.ar(in, buf, 0, level, xfade, run);
-}).store;
+}).add;
 
-//Buffer afspelen:
+//Buffer Player:
 SynthDef(\bufPlayer, { | bufnum = 0|
 	var playbuf;
 	playbuf = PlayBuf.ar(1,bufnum);
